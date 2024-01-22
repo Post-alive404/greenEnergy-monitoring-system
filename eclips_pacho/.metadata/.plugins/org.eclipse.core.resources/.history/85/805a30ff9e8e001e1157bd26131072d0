@@ -1,0 +1,51 @@
+package energy.Energy_System;
+
+import org.eclipse.paho.client.mqttv3.MqttClient;
+import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
+import org.eclipse.paho.client.mqttv3.MqttException;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
+
+import java.text.DecimalFormat;
+
+
+public class App 
+{
+	public static void main(String[] args) {
+        String broker = "tcp://localhost:1883";
+        String clientId = "SensorEmulator";
+        String topic = "sensor/data";
+        
+        //позначаємо вузли станцій зеленої енргетики 
+        String windStationTopic = "wind_station_sensor/data";
+        String hydroStationTopic = "hydro_station_sensor/data";
+        String solarStationTopic = "solar_station_sensor/data";
+        String geothermalStationTopic = "geothermal_station_sensor/data";
+        String bioStationTopic = "bio_station_sensor/data";
+        
+        //емулюємо запити від вузлів
+        try {
+        	System.out.println("Connecting to broker: " + broker);
+            MqttClient client = new MqttClient(broker, clientId);
+            client.connect();
+
+            while (true) {
+            	
+                double sensorData = Math.random() * 100;
+                String message = String.valueOf(sensorData);
+
+                MqttMessage mqttMessage = new MqttMessage(message.getBytes());
+                client.publish(topic, mqttMessage);
+
+                System.out.println("Sent: " + message);
+
+                Thread.sleep(5000); // Очікування 5 секунд перед наступною відправкою даних
+            }
+        } catch (MqttException | InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+	
+	
+    
+}

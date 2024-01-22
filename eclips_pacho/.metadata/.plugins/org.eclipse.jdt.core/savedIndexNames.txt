@@ -1,0 +1,7 @@
+INDEX VERSION 1.134+D:\Study\Магистратура\Диплом\eclips_pacho\.metadata\.plugins\org.eclipse.jdt.core
+1327012752.index
+2477689012.index
+1793168686.index
+1696264553.index
+1865797976.index
+4094959512.index

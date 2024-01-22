@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Energy Monitoring System</title>
+    <!--Стилі об'єктів та елементів-->
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #000;
+            color: #fff;
+            font-family: Arial, sans-serif;
+        }
+
+        nav {
+            background-color: #000;
+            padding: 15px;
+            text-align: center;
+        }
+
+        nav img {
+            max-height: 50px;
+            vertical-align: middle;
+        }
+
+        nav a {
+            color: #FFA500;
+            text-decoration: none;
+            margin: 0 15px;
+            font-weight: bold;
+        }
+
+        nav a:hover {
+            color: #fff;
+        }
+
+        #map {
+            width: 100%;
+            height: 700px;
+            background-image: url('images/zyro-image.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            position: relative;
+        }
+        .station {
+            width: 40px;
+            height: 40px;
+            background-size: cover;
+            position: absolute;
+            cursor: pointer;
+        }
+
+        .graph-container {
+            position: absolute;
+            top: 0;
+            left: 100%;
+            margin-left: 10px;
+            display: none;
+            background-color: #fff;
+            padding: 5px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        #total-section {
+            text-align: center;
+            padding: 40px;
+            background-color: #1212125b;
+            color: #FFA500;
+        }
+        
+        #cop-section {
+            text-align: left;
+            padding: 40px;
+            background-color: #0000005b;
+            color: #ffa600;
+        }
+    </style>
+</head>
+
+<body>
+<!--Навігаційна панель-->
+    <nav>
+        <img src="images/your-logo.jpg" alt="Logo" height="30px">
+        <a href="#">Stations</a>
+        <a href="#">Total</a>
+        <a href="#">Services</a>
+        <a href="#">About</a>
+    </nav>
+
+    <div id="map">
+
+    </div>
+
+    <div class="graph-container">
+
+    </div>
+<!--Секція загального графіка-->
+    <div id="total-section">
+        <h2>Total</h2>
+        <iframe src="http://localhost:3000/d-solo/bb259cc3-d818-4a2c-ab9c-3a0127c39c69/greenenergy?orgId=1&refresh=auto&theme=dark&panelId=6" width="950" height="350" frameborder="0"></iframe>
+    </div>
+
+    <div id="cop-section">
+        <p>GreenEnergy by Denys Parshutkin</p>
+    </div>
+<!--JavaScript скрипт-->
+    <script>
+        // Позначаємо графіки
+        const stationCoordinates = [
+            { left: 720, top: 250, grafanaUrl: "http://localhost:3000/d-solo/bb259cc3-d818-4a2c-ab9c-3a0127c39c69/greenenergy?orgId=1&refresh=auto&theme=dark&panelId=1", icon: "images/hidro.jpg" },
+            { left: 710, top: 420, grafanaUrl: "http://localhost:3000/d-solo/bb259cc3-d818-4a2c-ab9c-3a0127c39c69/greenenergy?orgId=1&refresh=auto&theme=dark&panelId=2", icon: "images/solar.jpg" },
+            { left: 880, top: 350, grafanaUrl: "http://localhost:3000/d-solo/bb259cc3-d818-4a2c-ab9c-3a0127c39c69/greenenergy?orgId=1&refresh=auto&theme=dark&panelId=3", icon: "images/wind.jpg" },
+            { left: 380, top: 320, grafanaUrl: "http://localhost:3000/d-solo/bb259cc3-d818-4a2c-ab9c-3a0127c39c69/greenenergy?orgId=1&refresh=auto&theme=dark&panelId=4", icon: "images/geo.jpg" },
+            { left: 470, top: 200, grafanaUrl: "http://localhost:3000/d-solo/bb259cc3-d818-4a2c-ab9c-3a0127c39c69/greenenergy?orgId=1&refresh=auto&theme=dark&panelId=5", icon: "images/bio.jpg" },
+        ];
+
+        const mapContainer = document.getElementById('map');
+
+        stationCoordinates.forEach(station => {
+            const stationElement = document.createElement('div');
+            stationElement.className = 'station';
+            stationElement.style.left = `${station.left}px`;
+            stationElement.style.top = `${station.top}px`;
+            stationElement.style.backgroundImage = `url(${station.icon})`;
+
+            // Додаємо обробник події при наведенні курсору
+            stationElement.addEventListener('mouseover', () => {
+                // Створюємо контейнер для графіка
+                const graphContainer = document.createElement('div');
+                graphContainer.className = 'graph-container';
+
+                // Створюємо iframe із графіком Grafana
+                const iframe = document.createElement('iframe');
+                iframe.src = station.grafanaUrl;
+                iframe.width = "450";
+                iframe.height = "200";
+                iframe.frameBorder = "0";
+
+                // Додаємо iframe у контейнер для графіка
+                graphContainer.appendChild(iframe);
+
+                // Показуємо контейнер
+                graphContainer.style.display = 'block';
+
+                // Показуємо контейнер поряд зі станцією
+                graphContainer.style.top = `${station.top}px`;
+                graphContainer.style.left = `${station.left + 40}px`;
+
+                // Додаємо контейнер до карти
+                mapContainer.appendChild(graphContainer);
+            });
+
+            // Додаємо обробник події під час відходу курсору
+            stationElement.addEventListener('mouseout', () => {
+                // Видаляємо всі контейнери з графіками
+                const graphContainers = document.querySelectorAll('.graph-container');
+                graphContainers.forEach(container => container.remove());
+            });
+
+            mapContainer.appendChild(stationElement);
+        });
+    </script>
+</body>
+
+</html>

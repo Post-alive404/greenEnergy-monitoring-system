@@ -1,0 +1,61 @@
+package energy.Energy_System;
+
+import org.eclipse.paho.client.mqttv3.MqttClient;
+import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
+import org.eclipse.paho.client.mqttv3.MqttException;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
+
+import java.text.DecimalFormat;
+
+
+public class App 
+{
+	
+	public static void main(String[] args) {
+        String broker = "tcp://localhost:1883";
+        String clientId = "SensorEmulator";
+        String topic = "sensor/data";
+        
+        //позначаємо вузли станцій зеленої енргетики 
+        String hydroStationTopic = "hydro_station_sensor/data";
+        String solarStationTopic = "solar_station_sensor/data";
+        String windStationTopic = "wind_station_sensor/data";
+        String geothermalStationTopic = "geothermal_station_sensor/data";
+        String bioStationTopic = "bio_station_sensor/data";
+        
+        //емулюємо запити від вузлів
+        try {
+        	System.out.println("Connecting to broker: " + broker);
+            MqttClient client = new MqttClient(broker, clientId);
+            client.connect();
+
+            while (true) {
+            	String message = " ";
+            	
+//                double sensorData = Math.random() * 100;
+//                String message = String.valueOf(sensorData);
+            	message = sensorData(60, 100);
+                MqttMessage mqttMessageHydro = new MqttMessage(message.getBytes());
+                client.publish(hydroStationTopic, mqttMessageHydro);
+                System.out.println("Sent: "+ hydroStationTopic + " " + message);
+                
+                
+                message = sensorData(50, 90);
+                MqttMessage mqttMessageSolar = new MqttMessage(message.getBytes());
+                client.publish(solarStationTopic, mqttMessageSolar);
+                System.out.println("Sent: "+ solarStationTopic + " " + message);
+
+                Thread.sleep(5000); // Очікування 5 секунд перед наступною відправкою даних
+            }
+        } catch (MqttException | InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+	
+	private static String sensorData(int min, int max) {
+		int range = (max - min) + 1;     
+	    return String.valueOf((Math.random() * range) + min);
+	}
+    
+}
